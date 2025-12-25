@@ -64,6 +64,24 @@
     <script>
         const target = "drisana";
 
+const audio = new Audio("https://files.catbox.moe/bvcsjl.mp3");
+audio.loop = true;
+
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playTone(freq, duration, vol = 0.05) {
+            const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                    osc.type = 'sine'; // Softest sound type
+                        osc.connect(gain);
+                            gain.connect(audioCtx.destination);
+                                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                                    gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+                                        osc.start();
+                                            gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + duration);
+                                                osc.stop(audioCtx.currentTime + duration);
+        }
+
         // Logic for Page 1
         function checkInitialName() {
             const name = document.getElementById('initialName').value.trim().toLowerCase();
@@ -94,6 +112,8 @@
                     subtext.innerHTML = `<span style="color:#ff4d4d;">FAILED: Your device is not capable of handling such beauty!</span><br>
                                          <button onclick="goToCamera()">Bypass System & Scan 📸🔍 </button>`;
                 } else {
+                    // Add this inside the 'else' block of your loading interval
+                    // if (Math.random() > 0.95) playTone(1000, 0.05, 0.02); 
                     // Logic to slow down the loading bar as it reaches the end
                     width += (width < 80) ? 0.8 : (width < 95) ? 0.2 : 0.04;
                     bar.style.width = width + "%";
@@ -151,6 +171,21 @@ if (width > 90) subtext.innerText = "Warning: This level of cuteness is illegal 
                 }
             }, 2500);
         }
+        window.onload = () => {
+                setTimeout(() => {
+                        // This attempts to play the soft welcome "ping"
+                                if (audioCtx.state === 'suspended') {
+                                            document.body.addEventListener('click', () => {
+                                                            audioCtx.resume();
+                                                                            playTone(600, 0.2); 
+                                                                                            setTimeout(() => playTone(800, 0.3), 150);
+                                                                                                        }, { once: true });
+                                                                                                                } else {
+                                                                                                                            playTone(600, 0.2); 
+                                                                                                                                        setTimeout(() => playTone(800, 0.3), 150);
+                                                                                                                                                }
+                                                                                                                                                    }, 500); 
+                                                                                                                                                }
     </script>
 </body>
 </html>
