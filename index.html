@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beauty Database</title>
+    <style>
+        body { font-family: 'Courier New', Courier, monospace; text-align: center; background: #1a1a1a; color: #ff85a2; padding: 20px; transition: 0.5s; overflow-x: hidden; }
+        .hidden { display: none; }
+        input { padding: 10px; border-radius: 5px; border: 1px solid #ff85a2; background: #000; color: white; margin-bottom: 10px; width: 250px; }
+        button { padding: 10px 20px; background: #ff85a2; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+        
+        /* Loading Bar */
+        #progressContainer { width: 80%; max-width: 400px; height: 30px; border: 2px solid #ff85a2; margin: 20px auto; position: relative; border-radius: 15px; overflow: hidden; }
+        #progressBar { width: 0%; height: 100%; background: #ff85a2; transition: width 0.1s; }
+        
+        /* Crash Animation */
+        .crash-effect { animation: shake 0.1s infinite; background-color: #f00 !important; color: #fff !important; }
+        @keyframes shake {
+            0% { transform: translate(3px, 3px) rotate(0deg); }
+            33% { transform: translate(-3px, -2px) rotate(1deg); }
+            66% { transform: translate(2px, -3px) rotate(-1deg); }
+            100% { transform: translate(-2px, 2px) rotate(0deg); }
+        }
+        #video { width: 100%; max-width: 350px; border-radius: 15px; border: 3px solid #ff85a2; transform: scaleX(-1); }
+    </style>
+</head>
+<body>
+
+    <div id="page1">
+        <h1>Internal Beauty Registry</h1>
+        <input type="text" id="initialName" placeholder="Enter name to search...">
+        <br>
+        <button onclick="checkInitialName()">Search Database</button>
+        <p id="searchMsg"></p>
+    </div>
+
+    <div id="loadingPage" class="hidden">
+        <h3>Initializing Beauty Buffer...</h3>
+<p style="font-size: 0.8rem; color: #00ff00; background: #000; padding: 10px; display: inline-block; border-left: 3px solid #00ff00;">
+    <span style="color: #ff0000;">[CRITICAL HISTORY]:</span> 
+    Once, an idiot uploaded Drisu's photo. <br>
+    The server exploded. Proceed at your own risk.
+</p>
+
+        <div id="progressContainer">
+            <div id="progressBar"></div>
+        </div>
+        <p id="percent">0%</p>
+        <p id="loadingSubtext">Loading image assets...</p>
+    </div>
+
+    <div id="page3" class="hidden">
+        <h2>Visual Hardware Scan</h2>
+        <p>Enter your name for identification:</p>
+        <input type="text" id="scanName" placeholder="Name...">
+        <br>
+        <video id="video" autoplay playsinline muted></video>
+        <br>
+        <button id="scanBtn" onclick="processScan()">SCAN YOURSELF</button>
+        <p id="wasteTimeMsg" style="color: yellow; margin-top: 15px;"></p>
+    </div>
+
+    <script>
+        const target = "drisana";
+
+        // Logic for Page 1
+        function checkInitialName() {
+            const name = document.getElementById('initialName').value.trim().toLowerCase();
+            const msg = document.getElementById('searchMsg');
+
+            if (name === target) {
+    msg.innerHTML = `Very beautiful girl.. don't search about her, her beauty is overloaded it will make our server crash ..😭<br><br>
+                     <button onclick="startLoading()">How beautiful do I look?</button>`;
+        } 
+        else {
+                msg.innerText = "Error 404: I don't know you. Only authorized beauty can proceed.";
+            }
+        }
+
+        // Logic for Page 2 (Loading)
+        function startLoading() {
+            document.getElementById('page1').classList.add('hidden');
+            document.getElementById('loadingPage').classList.remove('hidden');
+            
+            let width = 0;
+            const bar = document.getElementById('progressBar');
+            const percentText = document.getElementById('percent');
+            const subtext = document.getElementById('loadingSubtext');
+
+            const interval = setInterval(() => {
+                if (width >= 99) {
+                    clearInterval(interval);
+                    subtext.innerHTML = `<span style="color:#ff4d4d;">FAILED: Your device is not capable of handling such beauty!</span><br>
+                                         <button onclick="goToCamera()">Bypass System & Scan 📸🔍 </button>`;
+                } else {
+                    // Logic to slow down the loading bar as it reaches the end
+                    width += (width < 80) ? 0.8 : (width < 95) ? 0.2 : 0.04;
+                    bar.style.width = width + "%";
+                    percentText.innerText = Math.floor(width) + "%";
+                    
+                    // Example of how to swap them in your existing logic:
+if (width > 30) subtext.innerText = "Attempting to render her image";
+if (width > 50) subtext.innerText = "CRITICAL: Aesthetic sensors have left the chat. 💀";
+if (width > 60) subtext.innerText = "GPU Alert: Fans spinning at max speed! ⚠️";
+if (width > 90) subtext.innerText = "Warning: This level of cuteness is illegal in 48 countries!";
+                }
+            }, 40);
+        }
+
+        // Logic for Page 3 (Camera)
+        function goToCamera() {
+            document.getElementById('loadingPage').classList.add('hidden');
+            document.getElementById('page3').classList.remove('hidden');
+            
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(stream => { 
+                    document.getElementById('video').srcObject = stream; 
+                })
+                .catch(err => {
+                    alert("Camera blocked. The scanner needs eyes to work!");
+                });
+        }
+
+        function processScan() {
+            const name = document.getElementById('scanName').value.trim().toLowerCase();
+            const scanBtn = document.getElementById('scanBtn');
+            const wasteMsg = document.getElementById('wasteTimeMsg');
+            
+            scanBtn.innerText = "ANALYZING...";
+            scanBtn.disabled = true;
+
+            setTimeout(() => {
+                if (name === target) {
+                    // THE CRASH
+                    document.body.classList.add('crash-effect');
+                    document.body.innerHTML = `
+                        <div style="padding-top:15vh; padding-left: 10px; padding-right: 10px;">
+                            <h1 style="font-size: 3.5rem; text-shadow: 2px 2px #000;">SYSTEM CRITICAL!</h1>
+                            <p style="font-size: 1.5rem;">I TOLD YOU OUR SERVER CAN'T HANDLE SUCH BEAUTY!</p>
+                            <hr style="border-color: white;">
+                            <p style="font-size: 1.2rem;">Drisana, your presence has exceeded our bandwidth limits.</p>
+                            <p>Please close this site before the hardware melts down.</p>
+                        </div>
+                    `;
+                } else {
+                    // THE REJECTION
+                    wasteMsg.innerText = "Analysis Complete: Please don't waste our time. No significant beauty detected for this ID.";
+                    scanBtn.innerText = "SCAN YOURSELF";
+                    scanBtn.disabled = false;
+                }
+            }, 2500);
+        }
+    </script>
+</body>
+</html>
