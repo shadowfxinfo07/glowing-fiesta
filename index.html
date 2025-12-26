@@ -5,25 +5,76 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Beauty Database</title>
     <style>
-        body { font-family: 'Courier New', Courier, monospace; text-align: center; background: #1a1a1a; color: #ff85a2; padding: 20px; transition: 0.5s; overflow-x: hidden; }
-        .hidden { display: none; }
-        input { padding: 10px; border-radius: 5px; border: 1px solid #ff85a2; background: #000; color: white; margin-bottom: 10px; width: 250px; }
-        button { padding: 10px 20px; background: #ff85a2; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: 10px; }
-        
-        /* Loading Bar */
-        #progressContainer { width: 80%; max-width: 400px; height: 30px; border: 2px solid #ff85a2; margin: 20px auto; position: relative; border-radius: 15px; overflow: hidden; }
-        #progressBar { width: 0%; height: 100%; background: #ff85a2; transition: width 0.1s; }
-        
-        /* Crash Animation */
-        .crash-effect { animation: shake 0.1s infinite; background-color: #f00 !important; color: #fff !important; }
-        @keyframes shake {
-            0% { transform: translate(3px, 3px) rotate(0deg); }
-            33% { transform: translate(-3px, -2px) rotate(1deg); }
-            66% { transform: translate(2px, -3px) rotate(-1deg); }
-            100% { transform: translate(-2px, 2px) rotate(0deg); }
-        }
-        #video { width: 100%; max-width: 350px; border-radius: 15px; border: 3px solid #ff85a2; transform: scaleX(-1); }
-    </style>
+    /* New Playful Overload Effect */
+.magic-overload { 
+    background: linear-gradient(45deg, #ff85a2, #ffb7c5, #9b59b6) !important;
+    animation: pulseGlow 2s infinite alternate !important;
+}
+
+@keyframes pulseGlow {
+    from { filter: hue-rotate(0deg) brightness(1); }
+    to { filter: hue-rotate(30deg) brightness(1.2); }
+}
+
+.final-card {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border-radius: 30px;
+    padding: 30px;
+    border: 3px dashed #fff;
+    margin: 10vh auto;
+    width: 80%;
+    max-width: 500px;
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.5);
+}
+
+    /* Animated Gradient Background */
+    body { 
+        font-family: 'Courier New', Courier, monospace; 
+        text-align: center; 
+        margin: 0;
+        padding: 20px;
+        min-height: 100vh;
+        color: #fff; 
+        background: linear-gradient(-45deg, #1a1a1a, #2d1b33, #1b2d33, #331b1b);
+        background-size: 400% 400%;
+        animation: gradientBG 15s ease infinite;
+        overflow-x: hidden;
+        transition: 0.5s;
+    }
+
+    @keyframes gradientBG {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
+    /* Floating Drawn Figures */
+    .figure {
+        position: absolute;
+        font-size: 2rem;
+        opacity: 0.6;
+        user-select: none;
+        pointer-events: none;
+        animation: float 6s linear infinite;
+        z-index: -1;
+    }
+
+    @keyframes float {
+        0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+        10% { opacity: 0.6; }
+        90% { opacity: 0.6; }
+        100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+    }
+
+    /* Keep your existing button and bar styles below */
+    .hidden { display: none; }
+    input { padding: 12px; border-radius: 10px; border: 2px solid #ff85a2; background: rgba(0,0,0,0.5); color: white; width: 260px; outline: none; }
+    button { padding: 12px 24px; background: #ff85a2; color: white; border: none; border-radius: 20px; cursor: pointer; font-weight: bold; margin-top: 10px; box-shadow: 0 4px 15px rgba(255, 133, 162, 0.4); }
+    #progressContainer { width: 80%; max-width: 400px; height: 25px; border: 2px solid #ff85a2; margin: 20px auto; border-radius: 15px; overflow: hidden; background: rgba(0,0,0,0.3); }
+    #progressBar { width: 0%; height: 100%; background: #ff85a2; transition: width 0.1s; }
+    #video { width: 100%; max-width: 350px; border-radius: 20px; border: 5px solid #ff85a2; transform: scaleX(-1); }
+</style>
 </head>
 <body>
 
@@ -34,6 +85,184 @@
         <button onclick="checkInitialName()">Search Database</button>
         <p id="searchMsg"></p>
     </div>
+
+    <div id="loadingPage" class="hidden">
+        <h3>Initializing Beauty Buffer...</h3>
+<p style="font-size: 0.8rem; color: #00ff00; background: #000; padding: 10px; display: inline-block; border-left: 3px solid #00ff00;">
+    <span style="color: #ff0000;">[CRITICAL HISTORY]:</span> 
+    Once, an idiot uploaded Drisu's photo. <br>
+    The server exploded. Proceed at your own risk.
+</p>
+
+        <div id="progressContainer">
+            <div id="progressBar"></div>
+        </div>
+        <p id="percent">0%</p>
+        <p id="loadingSubtext">Loading image assets...</p>
+    </div>
+
+    <div id="page3" class="hidden">
+        <h2>Visual Hardware Scan</h2>
+        <p>Enter your name for identification:</p>
+        <input type="text" id="scanName" placeholder="Name...">
+        <br>
+        <video id="video" autoplay playsinline muted></video>
+        <br>
+        <button id="scanBtn" onclick="processScan()">SCAN YOURSELF</button>
+        <p id="wasteTimeMsg" style="color: yellow; margin-top: 15px;"></p>
+    </div>
+
+    <script>
+        const target = "drisana";
+
+// This connects the music file
+const audio = new Audio("Haseen - Talwiinder_1.mp3");
+audio.loop = true;
+
+// This sets up the playful sound system
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+function playTone(freq, duration, vol = 0.05) {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+    gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+    osc.start();
+    gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + duration);
+    osc.stop(audioCtx.currentTime + duration);
+}
+
+
+        // Logic for Page 1
+        function checkInitialName() {
+    const name = document.getElementById('initialName').value.trim().toLowerCase();
+    const msg = document.getElementById('searchMsg');
+
+    if (name === target) {
+        // --- ADD THESE TWO LINES ---
+        audio.currentTime = 2.5; 
+        audio.play().catch(e => console.log("Play blocked"));
+        // ---------------------------
+        
+        msg.innerHTML = `Very beautiful girl.. don't search about her, her beauty is overloaded it will make our server crash ..😭<br><br>
+                         <button onclick="startLoading()">How beautiful do I look?</button>`;
+    } else {
+        msg.innerText = "Error 404: I don't know you.";
+    }
+}
+
+        // Logic for Page 2 (Loading)
+        function startLoading() {
+            document.getElementById('page1').classList.add('hidden');
+            document.getElementById('loadingPage').classList.remove('hidden');
+            
+            let width = 0;
+            const bar = document.getElementById('progressBar');
+            const percentText = document.getElementById('percent');
+            const subtext = document.getElementById('loadingSubtext');
+
+            const interval = setInterval(() => {
+                if (width >= 99) {
+                    clearInterval(interval);
+                    subtext.innerHTML = `<span style="color:#ff4d4d;">FAILED: Your device is not capable of handling such beauty!</span><br>
+                                         <button onclick="goToCamera()">Bypass System & Scan 📸🔍 </button>`;
+                } else {
+                    // Logic to slow down the loading bar as it reaches the end
+                    width += (width < 80) ? 0.8 : (width < 95) ? 0.2 : 0.04;
+                    bar.style.width = width + "%";
+                    percentText.innerText = Math.floor(width) + "%";
+                    
+                    // Example of how to swap them in your existing logic:
+if (width > 30) subtext.innerText = "Attempting to render her image";
+if (width > 50) subtext.innerText = "CRITICAL: Aesthetic sensors have left the chat. 💀";
+if (width > 60) subtext.innerText = "GPU Alert: Fans spinning at max speed! ⚠️";
+if (width > 90) subtext.innerText = "Warning: This level of cuteness is illegal in 48 countries!";
+                }
+            }, 40);
+        }
+
+        // Logic for Page 3 (Camera)
+        function goToCamera() {
+            document.getElementById('loadingPage').classList.add('hidden');
+            document.getElementById('page3').classList.remove('hidden');
+            
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(stream => { 
+                    document.getElementById('video').srcObject = stream; 
+                })
+                .catch(err => {
+                    alert("Camera blocked. The scanner needs eyes to work!");
+                });
+        }
+
+        function processScan() {
+    const name = document.getElementById('scanName').value.trim().toLowerCase();
+    const scanBtn = document.getElementById('scanBtn');
+    const wasteMsg = document.getElementById('wasteTimeMsg');
+    
+    scanBtn.innerText = "MEASURING RADIANCE..."; // More playful text
+    scanBtn.disabled = true;
+
+    setTimeout(() => {
+        if (name === target) {
+            // THE NEW MAGICAL CRASH
+            audio.pause(); // Stops the song gently
+            if(typeof playTone === "function") playTone(800, 1, 0.1); 
+
+            document.body.classList.add('magic-overload'); // This adds the pink/purple glow
+            document.body.innerHTML = `
+                <div class="final-card">
+                    <h1 style="font-size: 2.5rem;">✨ SYSTEM OVERLOAD ✨</h1>
+                    <p style="font-size: 1.3rem; line-height: 1.5;">
+                        Drisana, your beauty levels have exceeded the maximum capacity of this server.
+                    </p>
+                    <hr style="border: 1px dashed white; margin: 20px 0;">
+                    <p style="font-style: italic;">
+                        The database has melted into sparkles. <br> 
+                        Scan failed: Result is "Infinite Perfection". 🌸
+                    </p>
+                </div>
+            `;
+            // This makes the floating hearts and stars explode!
+            setInterval(createFloatingFigures, 100); 
+        } else {
+            // THE REJECTION
+            wasteMsg.innerText = "Analysis Complete: No significant beauty detected for this ID.";
+            scanBtn.innerText = "SCAN YOURSELF";
+            scanBtn.disabled = false;
+        }
+    }, 2500);
+}
+
+        function createFloatingFigures() {
+    const symbols = ['✨', '🔥', '💐', '☁️', '🌸', '🎈'];
+    const container = document.body;
+
+    setInterval(() => {
+        const figure = document.createElement('div');
+        figure.className = 'figure';
+        figure.innerText = symbols[Math.floor(Math.random() * symbols.length)];
+        figure.style.left = Math.random() * 100 + 'vw';
+        figure.style.animationDuration = (Math.random() * 3 + 4) + 's';
+        container.appendChild(figure);
+
+        // Remove the figure after animation to keep the site fast
+        setTimeout(() => { figure.remove(); }, 7000);
+    }, 800);
+}
+
+// Add this line inside your window.onload
+window.onload = () => {
+    createFloatingFigures(); // Starts the playful icons
+    // ... your existing sound logic ...
+};
+
+    </script>
+</body>
+</html>
 
     <div id="loadingPage" class="hidden">
         <h3>Initializing Beauty Buffer...</h3>
