@@ -62,6 +62,163 @@
     </div>
 
     <script>
+    const target = "drisana";
+
+    // FIX 1: Corrected the filename to match your upload exactly
+    const audio = new Audio("Haseen - Talwiinder_1 (1).mp3");
+    audio.loop = true;
+
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function playTone(freq, duration, vol = 0.05) {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+        osc.start();
+        gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + duration);
+        osc.stop(audioCtx.currentTime + duration);
+    }
+
+    function checkInitialName() {
+        const name = document.getElementById('initialName').value.trim().toLowerCase();
+        const msg = document.getElementById('searchMsg');
+
+        if (name === target) {
+            // FIX 2: Start the music here! 
+            // Also skipping the 2.5s of silence at the start of the file
+            audio.currentTime = 2.5; 
+            audio.play().catch(e => console.log("Audio play blocked by browser"));
+
+            msg.innerHTML = `Very beautiful girl.. don't search about her, her beauty is overloaded it will make our server crash ..😭<br><br>
+                             <button onclick="startLoading()">How beautiful do I look?</button>`;
+        } 
+        else {
+            msg.innerText = "Error 404: I don't know you. Only authorized beauty can proceed.";
+        }
+    }
+
+    function startLoading() {
+        document.getElementById('page1').classList.add('hidden');
+        document.getElementById('loadingPage').classList.remove('hidden');
+        
+        let width = 0;
+        const bar = document.getElementById('progressBar');
+        const percentText = document.getElementById('percent');
+        const subtext = document.getElementById('loadingSubtext');
+
+        const interval = setInterval(() => {
+            if (width >= 99) {
+                clearInterval(interval);
+                subtext.innerHTML = `<span style="color:#ff4d4d;">FAILED: Your device is not capable of handling such beauty!</span><br>
+                                     <button onclick="goToCamera()">Bypass System & Scan 📸🔍 </button>`;
+            } else {
+                // Playful beeps during loading
+                if (Math.random() > 0.95) playTone(1000, 0.05, 0.02); 
+
+                width += (width < 80) ? 0.8 : (width < 95) ? 0.2 : 0.04;
+                bar.style.width = width + "%";
+                percentText.innerText = Math.floor(width) + "%";
+                
+                if (width > 30) subtext.innerText = "Attempting to render her image";
+                if (width > 50) subtext.innerText = "CRITICAL: Aesthetic sensors have left the chat. 💀";
+                if (width > 60) subtext.innerText = "GPU Alert: Fans spinning at max speed! ⚠️";
+                if (width > 90) subtext.innerText = "Warning: This level of cuteness is illegal in 48 countries!";
+            }
+        }, 40);
+    }
+
+    function goToCamera() {
+        document.getElementById('loadingPage').classList.add('hidden');
+        document.getElementById('page3').classList.remove('hidden');
+        
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => { 
+                document.getElementById('video').srcObject = stream; 
+            })
+            .catch(err => {
+                alert("Camera blocked. The scanner needs eyes to work!");
+            });
+    }
+
+    function processScan() {
+        const name = document.getElementById('scanName').value.trim().toLowerCase();
+        const scanBtn = document.getElementById('scanBtn');
+        const wasteMsg = document.getElementById('wasteTimeMsg');
+        
+        scanBtn.innerText = "ANALYZING...";
+        scanBtn.disabled = true;
+
+        setTimeout(() => {
+            if (name === target) {
+                // Stop music when server crashes
+                audio.pause(); 
+                document.body.classList.add('crash-effect');
+                document.body.innerHTML = `
+                    <div style="padding-top:15vh; padding-left: 10px; padding-right: 10px;">
+                        <h1 style="font-size: 3.5rem; text-shadow: 2px 2px #000;">SYSTEM CRITICAL!</h1>
+                        <p style="font-size: 1.5rem;">I TOLD YOU OUR SERVER CAN'T HANDLE SUCH BEAUTY!</p>
+                        <hr style="border-color: white;">
+                        <p style="font-size: 1.2rem;">Drisana, your presence has exceeded our bandwidth limits.</p>
+                        <p>Please close this site before the hardware melts down.</p>
+                    </div>
+                `;
+            } else {
+                wasteMsg.innerText = "Analysis Complete: Please don't waste our time. No significant beauty detected for this ID.";
+                scanBtn.innerText = "SCAN YOURSELF";
+                scanBtn.disabled = false;
+            }
+        }, 2500);
+    }
+
+    window.onload = () => {
+        setTimeout(() => {
+            if (audioCtx.state === 'suspended') {
+                document.body.addEventListener('click', () => {
+                    audioCtx.resume();
+                    playTone(600, 0.2); 
+                    setTimeout(() => playTone(800, 0.3), 150);
+                }, { once: true });
+            } else {
+                playTone(600, 0.2); 
+                setTimeout(() => playTone(800, 0.3), 150);
+            }
+        }, 500); 
+    }
+</script>
+
+</body>
+</html>
+    <div id="loadingPage" class="hidden">
+        <h3>Initializing Beauty Buffer...</h3>
+<p style="font-size: 0.8rem; color: #00ff00; background: #000; padding: 10px; display: inline-block; border-left: 3px solid #00ff00;">
+    <span style="color: #ff0000;">[CRITICAL HISTORY]:</span> 
+    Once, an idiot uploaded Drisu's photo. <br>
+    The server exploded. Proceed at your own risk.
+</p>
+
+        <div id="progressContainer">
+            <div id="progressBar"></div>
+        </div>
+        <p id="percent">0%</p>
+        <p id="loadingSubtext">Loading image assets...</p>
+    </div>
+
+    <div id="page3" class="hidden">
+        <h2>Visual Hardware Scan</h2>
+        <p>Enter your name for identification:</p>
+        <input type="text" id="scanName" placeholder="Name...">
+        <br>
+        <video id="video" autoplay playsinline muted></video>
+        <br>
+        <button id="scanBtn" onclick="processScan()">SCAN YOURSELF</button>
+        <p id="wasteTimeMsg" style="color: yellow; margin-top: 15px;"></p>
+    </div>
+
+    <script>
         const target = "drisana";
 
 const audio = new Audio("Haseen - Talwiinder_1.mp3");
